@@ -5,7 +5,7 @@ from rest_framework import status
 # import model
 from pos_app.models import User, TableResto, StatusModel, Category, MenuResto
 # import serializer
-from api.serializers import RegisterUserSerializer, LoginSerializer,TableRestoSerializer, MenuRestoSerializer,CategorySerializer
+from api.serializers import RegisterUserSerializer, LoginSerializer,TableRestoSerializer, MenuRestoSerializer,CategorySerializer,Order,OrderCreateSerializer,OrderSerializer,OrderInfoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
 #import uutk generic clan dan filters
@@ -276,7 +276,23 @@ def get_csrf(request):
     })
 
 
+# views.py
 
+class OrderListApiView(generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+class OrderCreateApiView(generics.CreateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderCreateSerializer
+
+class OrderInfoApiView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderInfoSerializer
+
+class OrderDeleteApiView(generics.DestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
 
 
 

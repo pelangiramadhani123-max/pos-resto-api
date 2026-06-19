@@ -106,3 +106,65 @@ class MenuResto(models.Model):
     
     class Meta:
         ordering = ['id']
+
+
+def increment_order_code():
+    last_code = Order.objects.all().last()
+
+    if not last_code:
+        return '0001' + '-' + str(datetime.today().month) + str(datetime.today().year)
+    code = last_code.code
+    code_int = int(code[0:4])
+    new_code_int = code_int + 1
+    return str(new_code_int).zfill(4) + '-' + str(datetime.today().month) + str(datetime.today().year)
+
+class Order(models.Model):
+    status_order_status_choices = (
+        ('Belum Bayar','Belum Bayar'),
+        ('Sudah Bayar', 'Sudah Bayar'),
+	) 
+    code = models.CharField(max_length = 20, default = increment_order_code, editable = False)
+    table_resto = models.ForeignKey(TableResto, related_name = 'table_resto_order', 
+        blank = True, null = True, on_delete = models.SET_NULL)    
+    user = models.ForeignKey(User, related_name = 'user_order', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    order_status = models.CharField(max_length = 20, choices = status_order_status_choices, 
+        default = 'Belum Bayar')
+    total_order = models.FloatField(default = 0, blank = True, null = True)
+    tax_order = models.FloatField(default = 0, blank = True, null = True)
+    total_payment = models.FloatField(default = 0, blank = True, null = True)
+    user_create = models.ForeignKey(User, related_name = 'user_create_order', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    user_update = models.ForeignKey(User, related_name = 'user_update_order', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    created_on = models.DateTimeField(auto_now_add = True)
+    last_modified = models.DateTimeField(auto_now = True)
+
+    def _str_(self):
+        return f'{self.code}'
+    
+class OrderDetail(models.Model):    
+    status_order_detail_choices = (
+        ('Sedang disiapkan','Sedang disiapkan'),
+        ('Sudah disajikan', 'Sudah disajikan'),
+	)
+    order = models.ForeignKey(Order, related_name = 'order_order_detail', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    menu_resto = models.ForeignKey(MenuResto, related_name = 'menu_resto_order_detail', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    quantity = models.IntegerField(default = 0)
+    subtotal = models.IntegerField(default = 0, blank = True, null = True)
+    description =  models.CharField(max_length = 200, blank = True, null = True)
+    order_detail_status = models.CharField(max_length = 30, 
+        choices = status_order_detail_choices, default = 'Sedang disiapkan')
+    status = models.ForeignKey(StatusModel, related_name = 'status_order_detail', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    user_create = models.ForeignKey(User, related_name = 'user_create_order_detail', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    user_update = models.ForeignKey(User, related_name = 'user_update_order_detail', 
+        blank = True, null = True, on_delete = models.SET_NULL)
+    created_on = models.DateTimeField(auto_now_add = True)
+    last_modified = models.DateTimeField(auto_now = True)
+
+    def _str_(self):
+        return f'{self.order}'

@@ -26,5 +26,10 @@ urlpatterns = [
   path('api/menu-resto', views.MenuRestoPermissionView.as_view()),
 
   path('api/get-csrf/', views.get_csrf),
+  
+  path('api/order-list', views.OrderListApiView.as_view()),
+  path('api/order-create', views.OrderCreateApiView.as_view()),
+  path('api/order-info/<pk>', views.OrderInfoApiView.as_view()),
+  path('api/order-delete/<pk>', views.OrderDeleteApiView.as_view()),
 
 ]
